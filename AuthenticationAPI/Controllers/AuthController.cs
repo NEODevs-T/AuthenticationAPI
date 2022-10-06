@@ -22,6 +22,15 @@ namespace AuthenticationAPI.Controllers
             _configuration = configuration;
         }
 
+        [HttpGet, Authorize]
+        public ActionResult<string> GetMe()
+        {
+            var userName=User.Identity?.Name;
+            var userName2 = User.FindFirstValue(ClaimTypes.Name);
+            var role = User.FindFirstValue(ClaimTypes.Role);
+            return Ok(new { userName, userName2, role });
+        }
+
         [HttpPost("register")]
         public async Task<ActionResult<AutenUsrs>> Registrar(UserDto request)
         {
@@ -55,7 +64,8 @@ namespace AuthenticationAPI.Controllers
         {
             List<Claim> claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.Name, user.UserName), //Usuario
+                new Claim(ClaimTypes.Role, "Admin"), //Rol a recibir del consulta para permisos 
             };
 
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(
