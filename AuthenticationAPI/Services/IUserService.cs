@@ -2,9 +2,7 @@
 {
     public interface IUserService
     {
-        //public string GEtMyName()
-        //{
-
-        //}
+        string GEtMyName();
+        
     }
 }
