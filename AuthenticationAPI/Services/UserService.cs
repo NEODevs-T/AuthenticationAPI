@@ -1,4 +1,6 @@
-﻿namespace AuthenticationAPI.Services
+﻿using System.Security.Claims;
+
+namespace AuthenticationAPI.Services
 {
     public class UserService : IUserService
     {
@@ -8,9 +10,14 @@
         {
             _httpContextAccessor = httpContextAccessor;
         }
-        public string GEtMyName()
+        public string GetMyName()
         {
-            throw new NotImplementedException();
+            var result=string.Empty;
+            if(_httpContextAccessor.HttpContext != null)
+            {
+                result = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Name);
+            }
+           return result;
         }
     }
 }

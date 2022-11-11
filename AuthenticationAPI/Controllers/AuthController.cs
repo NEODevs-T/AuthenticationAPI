@@ -16,19 +16,26 @@ namespace AuthenticationAPI.Controllers
         public static AutenUsrs user = new AutenUsrs();
 
         private readonly IConfiguration _configuration;
+        private readonly IUserService _userService;
 
-        public AuthController(IConfiguration configuration)
+        public IUserService UserService { get; }
+
+        public AuthController(IConfiguration configuration, IUserService userService)
         {
             _configuration = configuration;
+            _userService = userService;
         }
 
         [HttpGet, Authorize]
         public ActionResult<string> GetMe()
         {
-            var userName=User.Identity?.Name;
-            var userName2 = User.FindFirstValue(ClaimTypes.Name);
-            var role = User.FindFirstValue(ClaimTypes.Role);
-            return Ok(new { userName, userName2, role });
+            var userName = _userService.GetMyName();
+            return Ok(userName);
+
+            //var userName=User.Identity?.Name;
+            //var userName2 = User.FindFirstValue(ClaimTypes.Name);
+            //var role = User.FindFirstValue(ClaimTypes.Role);
+            //return Ok(new { userName, userName2, role });
         }
 
         [HttpPost("register")]
@@ -57,15 +64,49 @@ namespace AuthenticationAPI.Controllers
                 return BadRequest("Contraseña Incorrecta");
             }
             string token = CreateToken(user);
+
+            var refreshToken = GenerateRefreshToken();
+            SetRefreshToken(refreshToken);
+
             return Ok(token);
         }
 
+        //[HttpPost("refresh-token")]
+        //public async Task<IActionResult<string>> RefreshToken()
+        //{
+        //    var refreshToken = Request.Cookies["refreshToken"];
+
+        //}
+        private RefreshToken GenerateRefreshToken()
+        {
+            var refreshToken = new RefreshToken
+            {
+                Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
+                Expires = DateTime.Now.AddDays(1),
+                Created = DateTime.Now
+            };
+            return refreshToken;
+        }
+
+        private void SetRefreshToken(RefreshToken newRefreshToken)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Expires = newRefreshToken.Expires
+            };
+            Response.Cookies.Append("refreshToken", newRefreshToken.Token,cookieOptions);
+            user.RefreshToken = newRefreshToken.Token;
+            user.TokenCreated = newRefreshToken.Created;
+            user.TokenExpires = newRefreshToken.Expires;
+        }
         private string CreateToken(AutenUsrs user)
         {
             List<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.UserName), //Usuario
                 new Claim(ClaimTypes.Role, "Admin"), //Rol a recibir del consulta para permisos 
+                //new Claim(ClaimTypes.)
             };
 
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(
@@ -75,7 +116,7 @@ namespace AuthenticationAPI.Controllers
 
             var token = new JwtSecurityToken(
                 claims:claims,
-                expires: DateTime.Now.AddDays(1),
+                expires: DateTime.Now.AddDays(7),
                 signingCredentials: cred);
                 
             var jtw = new JwtSecurityTokenHandler().WriteToken(token);
