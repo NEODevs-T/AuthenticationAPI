@@ -33,9 +33,7 @@ public partial class Usuario
 
     public string UsFicha { get; set; } = null!;
 
-    public int IdEmpresa { get; set; }
-
-    public virtual Empresa IdEmpresaNavigation { get; set; } = null!;
+    public string UsPass { get; set; } = null!;
 
     public virtual ICollection<Nivel> Nivels { get; } = new List<Nivel>();
 }

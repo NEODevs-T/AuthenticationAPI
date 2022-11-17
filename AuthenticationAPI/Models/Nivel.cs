@@ -11,11 +11,15 @@ public partial class Nivel
 
     public int IdProyecto { get; set; }
 
-    public int Nrol { get; set; }
+    public int? IdDivision { get; set; }
 
-    public string? NrolDesc { get; set; }
+    public int? IdRol { get; set; }
+
+    public virtual Division? IdDivisionNavigation { get; set; }
 
     public virtual ProyectoUsr IdProyectoNavigation { get; set; } = null!;
+
+    public virtual Rol? IdRolNavigation { get; set; }
 
     public virtual Usuario IdUsuarioNavigation { get; set; } = null!;
 }

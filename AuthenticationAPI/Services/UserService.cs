@@ -1,15 +1,22 @@
-﻿using System.Security.Claims;
+﻿using AuthenticationAPI.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace AuthenticationAPI.Services
 {
     public class UserService : IUserService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-       
-        public UserService(IHttpContextAccessor httpContextAccessor)
+        private readonly DbNeoContext _context;
+        public UserService(IHttpContextAccessor httpContextAccessor, DbNeoContext _DbNeoContext)
         {
             _httpContextAccessor = httpContextAccessor;
+            _context = _DbNeoContext;
         }
+
+        public  Usuario usrdata { get; set; } = new Usuario ();
+        List<Usuario> IUserService.usrdata { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
         public string GetMyName()
         {
             var result=string.Empty;
@@ -19,5 +26,12 @@ namespace AuthenticationAPI.Services
             }
            return result;
         }
+        public async Task<Usuario> DataUsr(string user)
+        {
+         
+            usrdata = await _context.Usuarios.FirstOrDefaultAsync(a => a.UsFicha == user);
+            return usrdata;
+        }
+       
     }
 }
