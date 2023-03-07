@@ -68,14 +68,18 @@ namespace AuthenticationAPI.Controllers
                 .Include(a=>a.IdUsuarioNavigation)
                 .Include(a=>a.IdProyectoNavigation)
                 .Include(a=>a.IdRolNavigation)
-                .FirstOrDefaultAsync(a => a.IdUsuarioNavigation.UsFicha == request.UserName & a.IdProyectoNavigation.Pnombre==request.Proyecto);
+                .Include(b=>b.IdDivisionNavigation)
+                .ThenInclude(x => x.IdCentroNavigation)
+                .ThenInclude(x => x.IdEmpresaNavigation)
+                .ThenInclude(x => x.IdPaisNavigation)
+                .FirstOrDefaultAsync(a => a.IdUsuarioNavigation.UsUsuario == request.UserName & a.IdProyectoNavigation.Pnombre==request.Proyecto);
 
             if (usuaridata == null)
             {
                 return BadRequest("null");
             }
 
-            if (usuaridata.IdUsuarioNavigation.UsFicha != request.UserName)
+            if (usuaridata.IdUsuarioNavigation.UsUsuario != request.UserName)
             {
                 return BadRequest("NotFoundUser");
             }
@@ -86,7 +90,7 @@ namespace AuthenticationAPI.Controllers
                 return BadRequest("WrongPassword");
             }
 
-            //Verifica la contraseña ebcriptada
+            //Verifica la contraseña encriptada
             //if(!VerifyPasswordHash( request.Password, user.PasswordHash, user.PasswordSalt))
             //{
             //    return BadRequest("Contraseña Incorrecta");
@@ -128,12 +132,18 @@ namespace AuthenticationAPI.Controllers
         {
             List<Claim> claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, user.IdUsuarioNavigation.UsFicha), //Usuario (ficha)
+                new Claim(ClaimTypes.Name, user.IdUsuarioNavigation.UsUsuario), //Usuario (ficha)
                 new Claim(ClaimTypes.Role,  user.IdRolNavigation.Rnombre), //Rol a recibir del consulta para permisos 
                 new Claim(ClaimTypes.GivenName,user.IdUsuarioNavigation.UsNombre), // Nombre
                 new Claim(ClaimTypes.Surname,user.IdUsuarioNavigation.UsApellido), // Apellido
-                //new Claim(ClaimTypes.Country,user.IdNivel.ToString(); // Nombre
-                //new Claim(ClaimTypes.)
+                new Claim("Pais",user.IdDivisionNavigation.IdCentroNavigation.IdEmpresaNavigation.IdPaisNavigation.Pnombre), // Pais
+                new Claim("Empresa",user.IdDivisionNavigation.IdCentroNavigation.IdEmpresaNavigation.Enombre), // Epresa
+                new Claim("Centro",user.IdDivisionNavigation.IdCentroNavigation.Cnom), // Centro
+                new Claim("Division",user.IdDivisionNavigation.Dnombre), // Division
+                new Claim("Correo",user.IdUsuarioNavigation.UsCorreo), // correo
+                new Claim("IdPas",user.IdDivisionNavigation.IdCentroNavigation.IdEmpresaNavigation.IdPaisNavigation.IdPais.ToString()), // IdPais
+
+                
             };
 
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(
