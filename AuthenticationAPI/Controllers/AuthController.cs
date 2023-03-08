@@ -141,7 +141,10 @@ namespace AuthenticationAPI.Controllers
                 new Claim("Centro",user.IdDivisionNavigation.IdCentroNavigation.Cnom), // Centro
                 new Claim("Division",user.IdDivisionNavigation.Dnombre), // Division
                 new Claim("Correo",user.IdUsuarioNavigation.UsCorreo), // correo
-                new Claim("IdPas",user.IdDivisionNavigation.IdCentroNavigation.IdEmpresaNavigation.IdPaisNavigation.IdPais.ToString()), // IdPais
+                new Claim("IdPais",user.IdDivisionNavigation.IdCentroNavigation.IdEmpresaNavigation.IdPaisNavigation.IdPais.ToString()), // IdPais
+                new Claim("IdEmprea",user.IdDivisionNavigation.IdCentroNavigation.IdEmpresaNavigation.IdEmpresa.ToString()), // IdEmpresa
+                new Claim("IdCentro",user.IdDivisionNavigation.IdDivision.ToString()), // IdCentro
+                new Claim("IdDiv",user.IdDivisionNavigation.IdDivision.ToString()), // IdDivision
 
                 
             };
