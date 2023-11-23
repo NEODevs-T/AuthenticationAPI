@@ -13,9 +13,11 @@ public partial class Nivel
 
     public int? IdDivision { get; set; }
 
+    public int? IdMaster { get; set; }
+
     public int? IdRol { get; set; }
 
-    public virtual Division? IdDivisionNavigation { get; set; }
+    public virtual Master? IdMasterNavigation { get; set; }
 
     public virtual ProyectoUsr IdProyectoNavigation { get; set; } = null!;
 

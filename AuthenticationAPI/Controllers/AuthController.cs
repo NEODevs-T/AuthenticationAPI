@@ -61,18 +61,34 @@ namespace AuthenticationAPI.Controllers
         [HttpPost("Login")]
         public async Task<ActionResult<string>> Login(UserDto request)
         {
-            //var user =  _userService.GetUsr(request.UserName);
-            //  var usuaridata = _userService.DataUsr(request.UserName) ;
+
 
             var usuaridata = await _context.Nivels
-                .Include(a=>a.IdUsuarioNavigation)
-                .Include(a=>a.IdProyectoNavigation)
-                .Include(a=>a.IdRolNavigation)
-                .Include(b=>b.IdDivisionNavigation)
-                .ThenInclude(x => x.IdCentroNavigation)
-                .ThenInclude(x => x.IdEmpresaNavigation)
-                .ThenInclude(x => x.IdPaisNavigation)
-                .FirstOrDefaultAsync(a => a.IdUsuarioNavigation.UsUsuario == request.UserName & a.IdProyectoNavigation.Pnombre==request.Proyecto);
+                 .Include(b => b.IdUsuarioNavigation)
+                 .Include(b => b.IdProyectoNavigation)
+                 .Include(b => b.IdRolNavigation)
+                 .Include(b => b.IdMasterNavigation)
+                 .Include(b => b.IdMasterNavigation.IdPaisNavigation)
+                 .Include(b => b.IdMasterNavigation.IdEmpresaNavigation)
+                 .Include(b => b.IdMasterNavigation.IdCentroNavigation)
+                 .Include(b => b.IdMasterNavigation.IdDivisionNavigation)
+                 .Include(b => b.IdMasterNavigation.IdLineaNavigation)
+                .FirstOrDefaultAsync(a => a.IdUsuarioNavigation.UsUsuario == request.UserName & a.IdProyectoNavigation.Pnombre == request.Proyecto);
+
+            //var usuaridata = await _context.Nivels        
+            //     .Include(b => b.IdUsuarioNavigation)
+            //     .Include(b => b.IdProyectoNavigation)
+            //     .Include(b => b.IdRolNavigation)
+            //     .Include(b => b.IdMasterNavigation)
+            //     .Include(b => b.IdMasterNavigation.IdPaisNavigation).ThenInclude(p => new  { p.Pnombre, p.IdPais })
+            //     .Include(b => b.IdMasterNavigation.IdEmpresaNavigation).ThenInclude(p => new { p.Enombre, p.IdEmpresa })
+            //     .Include(b => b.IdMasterNavigation.IdCentroNavigation).ThenInclude(p => new { p.Cnom, p.IdCentro })
+            //     .Include(b => b.IdMasterNavigation.IdDivisionNavigation).ThenInclude(p => new { p.Dnombre, p.IdDivision })
+            //     .Include(b => b.IdMasterNavigation.IdLineaNavigation).ThenInclude(p => new { p.Lnom, p.IdLinea })
+            //    .FirstOrDefaultAsync(a => a.IdUsuarioNavigation.UsUsuario == request.UserName & a.IdProyectoNavigation.Pnombre == request.Proyecto);
+
+
+
 
             if (usuaridata == null)
             {
@@ -136,16 +152,18 @@ namespace AuthenticationAPI.Controllers
                 new Claim(ClaimTypes.Role,  user.IdRolNavigation.Rnombre), //Rol a recibir del consulta para permisos 
                 new Claim(ClaimTypes.GivenName,user.IdUsuarioNavigation.UsNombre), // Nombre
                 new Claim(ClaimTypes.Surname,user.IdUsuarioNavigation.UsApellido), // Apellido
-                new Claim("Pais",user.IdDivisionNavigation.IdCentroNavigation.IdEmpresaNavigation.IdPaisNavigation.Pnombre), // Pais
-                new Claim("Empresa",user.IdDivisionNavigation.IdCentroNavigation.IdEmpresaNavigation.Enombre), // Epresa
-                new Claim("Centro",user.IdDivisionNavigation.IdCentroNavigation.Cnom), // Centro
-                new Claim("Division",user.IdDivisionNavigation.Dnombre), // Division
+                new Claim("Pais",user.IdMasterNavigation.IdPaisNavigation.Pnombre), // Pais
+                new Claim("Empresa",user.IdMasterNavigation.IdEmpresaNavigation.Enombre), // Epresa
+                new Claim("Centro",user.IdMasterNavigation.IdCentroNavigation.Cnom), // Centro
+                new Claim("Division",user.IdMasterNavigation.IdDivisionNavigation.Dnombre), // Division
                 new Claim("Correo",user.IdUsuarioNavigation.UsCorreo), // correo
-                new Claim("IdPais",user.IdDivisionNavigation.IdCentroNavigation.IdEmpresaNavigation.IdPaisNavigation.IdPais.ToString()), // IdPais
-                new Claim("IdEmpresa",user.IdDivisionNavigation.IdCentroNavigation.IdEmpresaNavigation.IdEmpresa.ToString()), // IdEmpresa
-                new Claim("IdCentro",user.IdDivisionNavigation.IdCentro.ToString()), // IdCentro
-                new Claim("IdDivision",user.IdDivisionNavigation.IdDivision.ToString()), // IdDivision
+                new Claim("IdPais",user.IdMasterNavigation.IdPais.ToString()), // IdPais
+                new Claim("IdEmpresa",user.IdMasterNavigation.IdEmpresa.ToString()), // IdEmpresa
+                new Claim("IdCentro",user.IdMasterNavigation.IdCentro.ToString()), // IdCentro
+                new Claim("IdDivision",user.IdMasterNavigation.IdDivision.ToString()), // IdDivision
                 new Claim("Ficha",user.IdUsuarioNavigation.UsFicha), // Ficha
+                new Claim("IdLinea",user.IdMasterNavigation.IdLinea.ToString()), // Ficha
+                new Claim("Linea",user.IdMasterNavigation.IdLineaNavigation.Lnom), // Ficha
 
                 
             };
