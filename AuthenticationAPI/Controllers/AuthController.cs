@@ -75,20 +75,7 @@ namespace AuthenticationAPI.Controllers
                  .Include(b => b.IdMasterNavigation.IdLineaNavigation)
                 .FirstOrDefaultAsync(a => a.IdUsuarioNavigation.UsUsuario == request.UserName & a.IdProyectoNavigation.Pnombre == request.Proyecto);
 
-            //var usuaridata = await _context.Nivels        
-            //     .Include(b => b.IdUsuarioNavigation)
-            //     .Include(b => b.IdProyectoNavigation)
-            //     .Include(b => b.IdRolNavigation)
-            //     .Include(b => b.IdMasterNavigation)
-            //     .Include(b => b.IdMasterNavigation.IdPaisNavigation).ThenInclude(p => new  { p.Pnombre, p.IdPais })
-            //     .Include(b => b.IdMasterNavigation.IdEmpresaNavigation).ThenInclude(p => new { p.Enombre, p.IdEmpresa })
-            //     .Include(b => b.IdMasterNavigation.IdCentroNavigation).ThenInclude(p => new { p.Cnom, p.IdCentro })
-            //     .Include(b => b.IdMasterNavigation.IdDivisionNavigation).ThenInclude(p => new { p.Dnombre, p.IdDivision })
-            //     .Include(b => b.IdMasterNavigation.IdLineaNavigation).ThenInclude(p => new { p.Lnom, p.IdLinea })
-            //    .FirstOrDefaultAsync(a => a.IdUsuarioNavigation.UsUsuario == request.UserName & a.IdProyectoNavigation.Pnombre == request.Proyecto);
-
-
-
+          
 
             if (usuaridata == null)
             {
