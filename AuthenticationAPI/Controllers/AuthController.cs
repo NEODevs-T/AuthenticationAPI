@@ -62,6 +62,8 @@ namespace AuthenticationAPI.Controllers
         public async Task<ActionResult<string>> Login(UserDto request)
         {
 
+            int idDesactivado = 38;
+
 
             var usuaridata = await _context.Nivels
                  .Include(b => b.IdUsuarioNavigation)
@@ -91,6 +93,14 @@ namespace AuthenticationAPI.Controllers
             if (request.Password != usuaridata.IdUsuarioNavigation.UsPass)
             {
                 return BadRequest("WrongPassword");
+            }
+
+            if(usuaridata.IdRol == idDesactivado){
+                return BadRequest("DeactivatedUser");
+            }
+
+            if(!usuaridata.IdUsuarioNavigation.UsEstatus){
+                return BadRequest("DeactivatedUserAll");
             }
 
             //Verifica la contraseña encriptada
