@@ -161,7 +161,7 @@ namespace AuthenticationAPI.Controllers
                 new Claim("Ficha",user.IdUsuarioNavigation.UsFicha), // Ficha
                 new Claim("IdLinea",user.IdMasterNavigation.IdLinea.ToString()), // Ficha
                 new Claim("Linea",user.IdMasterNavigation.IdLineaNavigation.Lnom), // Ficha
-
+                new Claim("Culture",user.IdMasterNavigation.IdPais == 5? "en" : "es"),
                 
             };
 
